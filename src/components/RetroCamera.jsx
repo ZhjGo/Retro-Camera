@@ -19,7 +19,7 @@ const RetroCamera = ({ onPhotoTaken }) => {
 
     return (
         <div
-            className="fixed bottom-[64px] left-[64px] w-[450px] h-[450px] z-20 pointer-events-none"
+            className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[300px] h-[300px] md:bottom-[64px] md:left-[64px] md:translate-x-0 md:w-[450px] md:h-[450px] z-20 pointer-events-none"
         >
             {/* Camera Body Image */}
             <img

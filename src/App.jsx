@@ -18,7 +18,7 @@ function AppContent() {
       date: new Date().toLocaleDateString(),
       caption: 'photo.developing', // Store key, translate in component
       isNew: true,
-      x: 0,
+      x: window.innerWidth < 768 ? '50%' : 0, // Center on mobile
       y: 0
     };
     setPhotos(prev => [...prev, newPhoto]);
@@ -94,12 +94,15 @@ function AppContent() {
       </div>
 
       {/* Title */}
-      <h1 className="absolute top-8 left-1/2 -translate-x-1/2 text-4xl md:text-6xl font-bold text-stone-800 tracking-wider z-10 pointer-events-none font-['Patrick_Hand']">
+      <h1 className="absolute top-8 left-1/2 -translate-x-1/2 text-3xl md:text-6xl font-bold text-stone-800 tracking-wider z-10 pointer-events-none font-['Patrick_Hand'] whitespace-nowrap">
         {t('app.title')}
       </h1>
 
       {/* Instructions */}
-      <div data-html2canvas-ignore="true" className="absolute bottom-8 right-8 text-right text-stone-600 z-10 pointer-events-none max-w-xs font-['Patrick_Hand']">
+      <div data-html2canvas-ignore="true" className="absolute bottom-24 left-1/2 -translate-x-1/2 text-center text-stone-500 text-sm md:hidden z-10 pointer-events-none font-['Patrick_Hand']">
+        {t('instructions.step2')}
+      </div>
+      <div data-html2canvas-ignore="true" className="hidden md:block absolute bottom-8 right-8 text-right text-stone-600 z-10 pointer-events-none max-w-xs font-['Patrick_Hand']">
         <h3 className="text-xl font-bold mb-2">{t('instructions.title')}</h3>
         <ul className="list-disc list-inside space-y-1 text-lg">
           <li>{t('instructions.step1')}</li>
@@ -122,7 +125,7 @@ function AppContent() {
         className="absolute top-8 left-8 z-50 bg-stone-800 text-white px-4 py-2 rounded-full shadow-lg hover:bg-stone-700 transition-colors flex items-center gap-2 font-['Patrick_Hand']"
       >
         <Download size={18} />
-        {t('action.download_wall')}
+        <span className="hidden md:inline">{t('action.download_wall')}</span>
       </button>
 
       {/* Photos Layer (Single container for all photos) */}
@@ -132,11 +135,10 @@ function AppContent() {
             <PhotoCard
               {...photo}
               style={{
-                // Camera is at bottom: 64px, left: 64px. Size 450x450.
-                // Center X = 64 + 225 = 289px.
-                // Top Y (from bottom) = 64 + 450 = 514px.
-                left: '289px',
-                bottom: '514px',
+                // Mobile: Camera 300x300, centered bottom.
+                // Desktop: Camera 450x450, bottom-left 64px.
+                left: window.innerWidth < 768 ? '50%' : '289px',
+                bottom: window.innerWidth < 768 ? '320px' : '514px',
                 x: '-50%', // Center horizontally relative to the left point
               }}
               onDragStart={handleDragStart}

@@ -64,7 +64,7 @@ const PhotoCard = ({
     return (
         <motion.div
             id={`photo-card-${id}`}
-            className={`absolute w-[300px] origin-top-left select-none ${isNew ? 'z-10' : 'z-40'}`}
+            className={`absolute w-[260px] md:w-[300px] origin-top-left select-none touch-none ${isNew ? 'z-10' : 'z-40'}`}
             style={style}
             animate={controls}
             drag

@@ -12,7 +12,7 @@ const LanguageSwitcher = () => {
             title={language === 'en' ? 'Switch to Chinese' : 'Switch to English'}
         >
             <Globe size={20} />
-            <span className="text-lg font-bold">{language === 'en' ? 'CN' : 'EN'}</span>
+            <span className="text-lg font-bold hidden md:inline">{language === 'en' ? 'CN' : 'EN'}</span>
         </button>
     );
 };
