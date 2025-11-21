@@ -1,0 +1,18 @@
+{
+    "app.title": "复古相机",
+    "instructions.title": "使用说明：",
+    "instructions.step1": "允许相机访问权限",
+    "instructions.step2": "点击快门按钮",
+    "instructions.step3": "等待照片显影",
+    "instructions.step4": "将照片拖到墙上",
+    "instructions.step5": "悬停以编辑或下载",
+    "photo.developing": "显影中...",
+    "photo.default_caption": "美好的瞬间。",
+    "photo.regenerating": "重新生成中...",
+    "photo.error_regenerate": "无法重新生成。",
+    "action.download": "下载",
+    "action.delete": "删除",
+    "action.take_photo": "拍照",
+    "action.edit": "编辑",
+    "action.regenerate": "重新生成描述"
+}

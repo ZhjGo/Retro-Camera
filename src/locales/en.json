@@ -1,0 +1,18 @@
+{
+    "app.title": "Retro Camera",
+    "instructions.title": "How to use:",
+    "instructions.step1": "Allow camera access",
+    "instructions.step2": "Click the shutter button",
+    "instructions.step3": "Wait for photo to develop",
+    "instructions.step4": "Drag photo to the wall",
+    "instructions.step5": "Hover to edit or download",
+    "photo.developing": "Developing...",
+    "photo.default_caption": "A beautiful moment.",
+    "photo.regenerating": "Regenerating...",
+    "photo.error_regenerate": "Could not regenerate.",
+    "action.download": "Download",
+    "action.delete": "Delete",
+    "action.take_photo": "Take Photo",
+    "action.edit": "Edit",
+    "action.regenerate": "Regenerate Caption"
+}
