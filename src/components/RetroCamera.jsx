@@ -2,6 +2,7 @@ import React from 'react';
 import { useCamera } from '../hooks/useCamera';
 import { useLanguage } from '../contexts/LanguageContext';
 import { RefreshCcw } from 'lucide-react';
+import backCameraImage from '../assets/against-retro-camera.png';
 
 const RetroCamera = ({ onPhotoTaken }) => {
     const { videoRef, takePhoto, toggleCamera, facingMode, stream } = useCamera();
@@ -100,7 +101,7 @@ const RetroCamera = ({ onPhotoTaken }) => {
                     style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
                 >
                     <img
-                        src="/src/assets/against-retro-camera.png"
+                        src={backCameraImage}
                         alt="Retro Camera Back"
                         className="w-full h-full object-contain select-none"
                     />
