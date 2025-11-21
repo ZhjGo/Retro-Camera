@@ -18,5 +18,10 @@
     "action.download_wall": "Download Wall",
     "action.shuffle": "Shuffle",
     "action.hide_camera": "Hide Camera",
-    "action.show_camera": "Show Camera"
+    "action.show_camera": "Show Camera",
+    "action.connect_phone": "Connect Phone",
+    "action.background": "Background",
+    "connect.title": "Scan to Connect",
+    "connect.subtitle": "Use your phone as a camera",
+    "connect.instruction": "Scan this QR code with your phone to connect and take photos remotely."
 }

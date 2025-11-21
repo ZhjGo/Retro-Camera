@@ -18,5 +18,10 @@
     "action.download_wall": "下载照片墙",
     "action.shuffle": "一键排版",
     "action.hide_camera": "隐藏相机",
-    "action.show_camera": "显示相机"
+    "action.show_camera": "显示相机",
+    "action.connect_phone": "连接手机",
+    "action.background": "切换背景",
+    "connect.title": "扫码连接",
+    "connect.subtitle": "使用手机作为相机",
+    "connect.instruction": "使用手机扫描二维码，即可连接电脑并进行远程拍摄。"
 }

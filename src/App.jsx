@@ -1,20 +1,67 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import RetroCamera from './components/RetroCamera';
 import PhotoCard from './components/PhotoCard';
 import { generateCaption } from './services/ai';
-import { Download, Layout, Eye, EyeOff } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 import LanguageSwitcher from './components/LanguageSwitcher';
-import BackgroundSelector from './components/BackgroundSelector';
+import MobileRemote from './components/MobileRemote';
+import ConnectModal from './components/ConnectModal';
+import ActionMenu from './components/ActionMenu';
+import Peer from 'peerjs';
 
 function AppContent() {
+  // Check if we are in remote mode
+  const isRemote = new URLSearchParams(window.location.search).has('connectTo');
+
+  if (isRemote) {
+    return <MobileRemote />;
+  }
+
   const [photos, setPhotos] = useState([]);
   const [currentBg, setCurrentBg] = useState('bg-stone-100');
   const [isCameraVisible, setIsCameraVisible] = useState(true);
+  const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
+  const [peerId, setPeerId] = useState(null);
+  const peerRef = useRef(null);
+
   const { t, language } = useLanguage();
+  const languageRef = useRef(language);
+
+  // Keep languageRef in sync
+  useEffect(() => {
+    languageRef.current = language;
+  }, [language]);
+
+  // Initialize PeerJS Host
+  useEffect(() => {
+    const peer = new Peer();
+    peerRef.current = peer;
+
+    peer.on('open', (id) => {
+      console.log('Host Peer ID:', id);
+      setPeerId(id);
+    });
+
+    peer.on('connection', (conn) => {
+      console.log('Client connected');
+      conn.on('data', (data) => {
+        if (data.type === 'photo' && data.data) {
+          handlePhotoTaken(data.data);
+        }
+      });
+    });
+
+    return () => {
+      peer.destroy();
+    };
+  }, []); // Empty dependency array to run once on mount
 
   const handlePhotoTaken = async (imageSrc) => {
+    // Use ref to get current language even in stale closures (PeerJS callback)
+    const currentLanguage = languageRef.current;
+    console.log('Taking photo with language:', currentLanguage);
+
     const newPhoto = {
       id: Date.now(),
       imageSrc,
@@ -33,7 +80,7 @@ function AppContent() {
 
     // Trigger AI caption
     try {
-      const caption = await generateCaption(imageSrc, language);
+      const caption = await generateCaption(imageSrc, currentLanguage);
       setPhotos(prev => prev.map(p => p.id === newPhoto.id ? { ...p, caption } : p));
     } catch (error) {
       console.error("AI Error", error);
@@ -162,7 +209,16 @@ function AppContent() {
     <div id="app-root" className={`relative w-screen h-screen overflow-hidden transition-colors duration-500 ${currentBg} selection:bg-orange-200`}>
       <div data-html2canvas-ignore="true">
         <LanguageSwitcher />
-        <BackgroundSelector currentBg={currentBg} onSelect={setCurrentBg} />
+        <ConnectModal isOpen={isConnectModalOpen} onClose={() => setIsConnectModalOpen(false)} peerId={peerId} />
+        <ActionMenu
+          onDownload={handleDownloadWall}
+          onShuffle={handleRandomLayout}
+          onToggleCamera={() => setIsCameraVisible(!isCameraVisible)}
+          isCameraVisible={isCameraVisible}
+          onConnectPhone={() => setIsConnectModalOpen(true)}
+          currentBg={currentBg}
+          onSelectBg={setCurrentBg}
+        />
       </div>
 
       {/* Title */}
@@ -190,35 +246,8 @@ function AppContent() {
         <RetroCamera onPhotoTaken={handlePhotoTaken} />
       </div>
 
-      {/* Action Buttons */}
-      <div className="absolute top-8 left-8 z-50 flex flex-col gap-4" data-html2canvas-ignore="true">
-        <button
-          onClick={handleDownloadWall}
-          className="bg-stone-800 text-white px-4 py-2 rounded-full shadow-lg hover:bg-stone-700 transition-colors flex items-center gap-2 font-['Patrick_Hand']"
-          title={t('action.download_wall')}
-        >
-          <Download size={18} />
-          <span className="hidden md:inline">{t('action.download_wall')}</span>
-        </button>
+      {/* Action Buttons - Replaced by ActionMenu */}
 
-        <button
-          onClick={handleRandomLayout}
-          className="bg-white text-stone-800 px-4 py-2 rounded-full shadow-lg hover:bg-stone-100 transition-colors flex items-center gap-2 font-['Patrick_Hand']"
-          title={t('action.shuffle')}
-        >
-          <Layout size={18} />
-          <span className="hidden md:inline">{t('action.shuffle')}</span>
-        </button>
-
-        <button
-          onClick={() => setIsCameraVisible(!isCameraVisible)}
-          className="bg-white text-stone-800 px-4 py-2 rounded-full shadow-lg hover:bg-stone-100 transition-colors flex items-center gap-2 font-['Patrick_Hand']"
-          title={isCameraVisible ? t('action.hide_camera') : t('action.show_camera')}
-        >
-          {isCameraVisible ? <EyeOff size={18} /> : <Eye size={18} />}
-          <span className="hidden md:inline">{isCameraVisible ? t('action.hide_camera') : t('action.show_camera')}</span>
-        </button>
-      </div>
 
       {/* Photos Layer (Single container for all photos) */}
       <div className="fixed inset-0 pointer-events-none z-0">
@@ -231,6 +260,7 @@ function AppContent() {
                 left: window.innerWidth < 768 ? '50%' : '239px',
                 bottom: window.innerWidth < 768 ? '320px' : '414px',
                 x: '-50%',
+                rotate: 0,
               }}
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}

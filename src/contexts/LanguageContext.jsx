@@ -7,7 +7,10 @@ const LanguageContext = createContext();
 export const useLanguage = () => useContext(LanguageContext);
 
 export const LanguageProvider = ({ children }) => {
-  const [language, setLanguage] = useState('en');
+  const [language, setLanguage] = useState(() => {
+    const saved = localStorage.getItem('appLanguage');
+    return saved || 'en';
+  });
   const [translations, setTranslations] = useState(en);
 
   useEffect(() => {
@@ -19,7 +22,11 @@ export const LanguageProvider = ({ children }) => {
   };
 
   const toggleLanguage = () => {
-    setLanguage((prev) => (prev === 'en' ? 'zh' : 'en'));
+    setLanguage(prev => {
+      const newLang = prev === 'en' ? 'zh' : 'en';
+      localStorage.setItem('appLanguage', newLang);
+      return newLang;
+    });
   };
 
   return (
