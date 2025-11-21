@@ -34,7 +34,7 @@ const PhotoCard = ({
             // Developing effect
             const timer = setTimeout(() => {
                 setIsDeveloping(false);
-            }, 3000);
+            }, 1500);
             return () => clearTimeout(timer);
         } else {
             controls.set({ y: 0 });
@@ -87,7 +87,7 @@ const PhotoCard = ({
                         <img
                             src={imageSrc}
                             alt="Memory"
-                            className={`w-full h-full object-cover transition-all duration-[3000ms] ${isDeveloping ? 'blur-md grayscale opacity-80' : 'blur-0 grayscale-0 opacity-100'}`}
+                            className={`w-full h-full object-cover transition-all duration-[1500ms] ${isDeveloping ? 'blur-md grayscale opacity-80' : 'blur-0 grayscale-0 opacity-100'}`}
                         />
                     </div>
 

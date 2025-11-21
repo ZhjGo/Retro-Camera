@@ -137,8 +137,8 @@ function AppContent() {
               style={{
                 // Mobile: Camera 300x300, centered bottom.
                 // Desktop: Camera 450x450, bottom-left 64px.
-                left: window.innerWidth < 768 ? '50%' : '289px',
-                bottom: window.innerWidth < 768 ? '320px' : '514px',
+                left: window.innerWidth < 768 ? '50%' : '239px',
+                bottom: window.innerWidth < 768 ? '320px' : '414px',
                 x: '-50%', // Center horizontally relative to the left point
               }}
               onDragStart={handleDragStart}
