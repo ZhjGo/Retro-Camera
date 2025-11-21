@@ -64,9 +64,10 @@ const PhotoCard = ({
     return (
         <motion.div
             id={`photo-card-${id}`}
-            className={`absolute w-[260px] md:w-[300px] origin-top-left select-none touch-none ${isNew ? 'z-10' : 'z-40'}`}
+            className={`absolute w-[260px] md:w-[300px] origin-center select-none touch-none ${isNew ? 'z-10' : 'z-40'}`}
             style={style}
             animate={controls}
+            layout
             drag
             dragMomentum={false}
             onDragStart={() => {
@@ -87,6 +88,7 @@ const PhotoCard = ({
                         <img
                             src={imageSrc}
                             alt="Memory"
+                            draggable={false}
                             className={`w-full h-full object-cover transition-all duration-[1500ms] ${isDeveloping ? 'blur-md grayscale opacity-80' : 'blur-0 grayscale-0 opacity-100'}`}
                         />
                     </div>

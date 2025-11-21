@@ -15,5 +15,8 @@
     "action.take_photo": "拍照",
     "action.edit": "编辑",
     "action.regenerate": "重新生成描述",
-    "action.download_wall": "下载照片墙"
+    "action.download_wall": "下载照片墙",
+    "action.shuffle": "一键排版",
+    "action.hide_camera": "隐藏相机",
+    "action.show_camera": "显示相机"
 }

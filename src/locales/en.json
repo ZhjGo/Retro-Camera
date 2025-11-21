@@ -15,5 +15,8 @@
     "action.take_photo": "Take Photo",
     "action.edit": "Edit",
     "action.regenerate": "Regenerate Caption",
-    "action.download_wall": "Download Wall"
+    "action.download_wall": "Download Wall",
+    "action.shuffle": "Shuffle",
+    "action.hide_camera": "Hide Camera",
+    "action.show_camera": "Show Camera"
 }

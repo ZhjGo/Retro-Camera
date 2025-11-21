@@ -2,13 +2,16 @@ import React, { useState } from 'react';
 import RetroCamera from './components/RetroCamera';
 import PhotoCard from './components/PhotoCard';
 import { generateCaption } from './services/ai';
-import { Download } from 'lucide-react';
+import { Download, Layout, Eye, EyeOff } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 import LanguageSwitcher from './components/LanguageSwitcher';
+import BackgroundSelector from './components/BackgroundSelector';
 
 function AppContent() {
   const [photos, setPhotos] = useState([]);
+  const [currentBg, setCurrentBg] = useState('bg-stone-100');
+  const [isCameraVisible, setIsCameraVisible] = useState(true);
   const { t, language } = useLanguage();
 
   const handlePhotoTaken = async (imageSrc) => {
@@ -18,8 +21,13 @@ function AppContent() {
       date: new Date().toLocaleDateString(),
       caption: 'photo.developing', // Store key, translate in component
       isNew: true,
-      x: window.innerWidth < 768 ? '50%' : 0, // Center on mobile
-      y: 0
+      // Initial position (ejection point)
+      style: {
+        left: window.innerWidth < 768 ? '50%' : '239px',
+        bottom: window.innerWidth < 768 ? '320px' : '414px',
+        x: '-50%',
+        rotate: 0,
+      }
     };
     setPhotos(prev => [...prev, newPhoto]);
 
@@ -87,14 +95,78 @@ function AppContent() {
     }
   };
 
+  const handleRandomLayout = () => {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const isMobile = width < 768;
+
+    // Card dimensions
+    const cardWidth = isMobile ? 260 : 300;
+    const cardHeight = cardWidth * 1.33 + 32; // Aspect ratio 4:3 + padding approx
+
+    // Safe margins
+    const safeMargin = 20;
+    const topOffset = 120; // Title and buttons area
+
+    setPhotos(prev => prev.map(photo => {
+      // Rotation range
+      const maxRot = isMobile ? 10 : 15;
+      const randomRotate = Math.random() * (maxRot * 2) - maxRot;
+
+      // Calculate bounding box size after rotation (radians)
+      const rad = Math.abs(randomRotate * Math.PI / 180);
+      const boundingW = cardWidth * Math.cos(rad) + cardHeight * Math.sin(rad);
+      const boundingH = cardWidth * Math.sin(rad) + cardHeight * Math.cos(rad);
+
+      // Calculate safe center range
+      // Center must be at least half bounding box away from edges + margin
+      const minCenterX = boundingW / 2 + safeMargin;
+      const maxCenterX = width - boundingW / 2 - safeMargin;
+
+      const minCenterY = topOffset + boundingH / 2;
+      const maxCenterY = height - boundingH / 2 - safeMargin;
+
+      // Ensure valid ranges
+      const rangeX = Math.max(0, maxCenterX - minCenterX);
+      const rangeY = Math.max(0, maxCenterY - minCenterY);
+
+      const randomCenterX = Math.random() * rangeX + minCenterX;
+      const randomCenterY = Math.random() * rangeY + minCenterY;
+
+      // Convert center to top-left for positioning
+      // Since we changed origin to center, we can position the center?
+      // No, absolute positioning is still top-left based.
+      // But transform origin is center.
+      // So if we set left/top, that's the top-left corner of the unrotated element.
+      // The rotation happens around the center of that box.
+      // So we just need to place the unrotated box such that its center is at randomCenter.
+      const left = randomCenterX - cardWidth / 2;
+      const top = randomCenterY - cardHeight / 2;
+
+      return {
+        ...photo,
+        isNew: false,
+        style: {
+          left: `${left}px`,
+          top: `${top}px`,
+          bottom: 'auto',
+          x: 0,
+          y: 0,
+          rotate: randomRotate
+        }
+      };
+    }));
+  };
+
   return (
-    <div id="app-root" className="relative w-screen h-screen overflow-hidden bg-stone-100 selection:bg-orange-200">
+    <div id="app-root" className={`relative w-screen h-screen overflow-hidden transition-colors duration-500 ${currentBg} selection:bg-orange-200`}>
       <div data-html2canvas-ignore="true">
         <LanguageSwitcher />
+        <BackgroundSelector currentBg={currentBg} onSelect={setCurrentBg} />
       </div>
 
       {/* Title */}
-      <h1 className="absolute top-8 left-1/2 -translate-x-1/2 text-3xl md:text-6xl font-bold text-stone-800 tracking-wider z-10 pointer-events-none font-['Patrick_Hand'] whitespace-nowrap">
+      <h1 className="absolute top-8 left-1/2 -translate-x-1/2 text-3xl md:text-6xl font-bold text-stone-800 tracking-wider z-10 pointer-events-none font-['Patrick_Hand'] whitespace-nowrap mix-blend-multiply opacity-80">
         {t('app.title')}
       </h1>
 
@@ -114,19 +186,39 @@ function AppContent() {
       </div>
 
       {/* Main Camera Component */}
-      <div data-html2canvas-ignore="true">
+      <div data-html2canvas-ignore="true" className={`transition-opacity duration-300 ${isCameraVisible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
         <RetroCamera onPhotoTaken={handlePhotoTaken} />
       </div>
 
-      {/* Download Wall Button */}
-      <button
-        data-html2canvas-ignore="true"
-        onClick={handleDownloadWall}
-        className="absolute top-8 left-8 z-50 bg-stone-800 text-white px-4 py-2 rounded-full shadow-lg hover:bg-stone-700 transition-colors flex items-center gap-2 font-['Patrick_Hand']"
-      >
-        <Download size={18} />
-        <span className="hidden md:inline">{t('action.download_wall')}</span>
-      </button>
+      {/* Action Buttons */}
+      <div className="absolute top-8 left-8 z-50 flex flex-col gap-4" data-html2canvas-ignore="true">
+        <button
+          onClick={handleDownloadWall}
+          className="bg-stone-800 text-white px-4 py-2 rounded-full shadow-lg hover:bg-stone-700 transition-colors flex items-center gap-2 font-['Patrick_Hand']"
+          title={t('action.download_wall')}
+        >
+          <Download size={18} />
+          <span className="hidden md:inline">{t('action.download_wall')}</span>
+        </button>
+
+        <button
+          onClick={handleRandomLayout}
+          className="bg-white text-stone-800 px-4 py-2 rounded-full shadow-lg hover:bg-stone-100 transition-colors flex items-center gap-2 font-['Patrick_Hand']"
+          title={t('action.shuffle')}
+        >
+          <Layout size={18} />
+          <span className="hidden md:inline">{t('action.shuffle')}</span>
+        </button>
+
+        <button
+          onClick={() => setIsCameraVisible(!isCameraVisible)}
+          className="bg-white text-stone-800 px-4 py-2 rounded-full shadow-lg hover:bg-stone-100 transition-colors flex items-center gap-2 font-['Patrick_Hand']"
+          title={isCameraVisible ? t('action.hide_camera') : t('action.show_camera')}
+        >
+          {isCameraVisible ? <EyeOff size={18} /> : <Eye size={18} />}
+          <span className="hidden md:inline">{isCameraVisible ? t('action.hide_camera') : t('action.show_camera')}</span>
+        </button>
+      </div>
 
       {/* Photos Layer (Single container for all photos) */}
       <div className="fixed inset-0 pointer-events-none z-0">
@@ -134,12 +226,11 @@ function AppContent() {
           <div key={photo.id} className="pointer-events-auto">
             <PhotoCard
               {...photo}
-              style={{
-                // Mobile: Camera 300x300, centered bottom.
-                // Desktop: Camera 450x450, bottom-left 64px.
+              // Use the style from the photo object if available, otherwise default (for backward compatibility or initial state)
+              style={photo.style || {
                 left: window.innerWidth < 768 ? '50%' : '239px',
                 bottom: window.innerWidth < 768 ? '320px' : '414px',
-                x: '-50%', // Center horizontally relative to the left point
+                x: '-50%',
               }}
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
