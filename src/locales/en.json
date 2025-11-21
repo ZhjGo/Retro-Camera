@@ -14,5 +14,6 @@
     "action.delete": "Delete",
     "action.take_photo": "Take Photo",
     "action.edit": "Edit",
-    "action.regenerate": "Regenerate Caption"
+    "action.regenerate": "Regenerate Caption",
+    "action.download_wall": "Download Wall"
 }

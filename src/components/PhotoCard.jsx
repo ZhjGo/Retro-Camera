@@ -144,7 +144,7 @@ const PhotoCard = ({
 
                     {/* Card Hover Controls (Download/Delete) */}
                     {!isNew && (
-                        <div className="absolute -top-8 left-0 w-full flex justify-center gap-2 opacity-0 hover:opacity-100 transition-opacity bg-white/80 py-1 rounded-t-lg">
+                        <div className="photo-actions absolute -top-8 left-0 w-full flex justify-center gap-2 opacity-100 transition-opacity bg-white/80 py-1 rounded-t-lg">
                             <button onClick={handleDownload} className="p-1 hover:text-blue-600" title={t('action.download')}>
                                 <Download size={16} />
                             </button>

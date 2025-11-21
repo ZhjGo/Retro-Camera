@@ -14,5 +14,6 @@
     "action.delete": "删除",
     "action.take_photo": "拍照",
     "action.edit": "编辑",
-    "action.regenerate": "重新生成描述"
+    "action.regenerate": "重新生成描述",
+    "action.download_wall": "下载照片墙"
 }

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import RetroCamera from './components/RetroCamera';
 import PhotoCard from './components/PhotoCard';
 import { generateCaption } from './services/ai';
+import { Download } from 'lucide-react';
+import html2canvas from 'html2canvas';
 import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 import LanguageSwitcher from './components/LanguageSwitcher';
 
@@ -62,9 +64,34 @@ function AppContent() {
     }
   };
 
+  const handleDownloadWall = async () => {
+    const element = document.getElementById('app-root');
+    if (!element) return;
+
+    try {
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        backgroundColor: null,
+        ignoreElements: (element) => {
+          if (element.classList.contains('photo-actions')) return true;
+          return false;
+        }
+      });
+
+      const link = document.createElement('a');
+      link.download = `bao-retro-wall-${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch (err) {
+      console.error("Download Wall Error", err);
+    }
+  };
+
   return (
-    <div className="relative w-screen h-screen overflow-hidden bg-stone-100 selection:bg-orange-200">
-      <LanguageSwitcher />
+    <div id="app-root" className="relative w-screen h-screen overflow-hidden bg-stone-100 selection:bg-orange-200">
+      <div data-html2canvas-ignore="true">
+        <LanguageSwitcher />
+      </div>
 
       {/* Title */}
       <h1 className="absolute top-8 left-1/2 -translate-x-1/2 text-4xl md:text-6xl font-bold text-stone-800 tracking-wider z-10 pointer-events-none font-['Patrick_Hand']">
@@ -72,7 +99,7 @@ function AppContent() {
       </h1>
 
       {/* Instructions */}
-      <div className="absolute bottom-8 right-8 text-right text-stone-600 z-10 pointer-events-none max-w-xs font-['Patrick_Hand']">
+      <div data-html2canvas-ignore="true" className="absolute bottom-8 right-8 text-right text-stone-600 z-10 pointer-events-none max-w-xs font-['Patrick_Hand']">
         <h3 className="text-xl font-bold mb-2">{t('instructions.title')}</h3>
         <ul className="list-disc list-inside space-y-1 text-lg">
           <li>{t('instructions.step1')}</li>
@@ -84,7 +111,19 @@ function AppContent() {
       </div>
 
       {/* Main Camera Component */}
-      <RetroCamera onPhotoTaken={handlePhotoTaken} />
+      <div data-html2canvas-ignore="true">
+        <RetroCamera onPhotoTaken={handlePhotoTaken} />
+      </div>
+
+      {/* Download Wall Button */}
+      <button
+        data-html2canvas-ignore="true"
+        onClick={handleDownloadWall}
+        className="absolute top-8 left-8 z-50 bg-stone-800 text-white px-4 py-2 rounded-full shadow-lg hover:bg-stone-700 transition-colors flex items-center gap-2 font-['Patrick_Hand']"
+      >
+        <Download size={18} />
+        {t('action.download_wall')}
+      </button>
 
       {/* Photos Layer (Single container for all photos) */}
       <div className="fixed inset-0 pointer-events-none z-0">
